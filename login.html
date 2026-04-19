@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>התחברות - גננות בעמק</title>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Heebo', Arial, sans-serif;
+      background: linear-gradient(145deg, #3d6128 0%, #6aaa4a 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 18px;
+      padding: 40px 36px 36px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    .logo-wrap {
+      margin-bottom: 10px;
+    }
+
+    .logo-wrap img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #e8f2df;
+    }
+
+    .company-name {
+      font-size: 26px;
+      font-weight: 800;
+      color: #4a7030;
+      margin-bottom: 4px;
+      text-align: center;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .field label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #444;
+    }
+
+    .field input {
+      border: 1.5px solid #ccddb8;
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-family: 'Heebo', Arial, sans-serif;
+      font-size: 15px;
+      color: #222;
+      outline: none;
+      background: #fafff7;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+
+    .field input:focus {
+      border-color: #5a8040;
+      box-shadow: 0 0 0 3px rgba(90,128,64,0.12);
+      background: white;
+    }
+
+    .error-msg {
+      background: #fff0f0;
+      border: 1px solid #ffcccc;
+      border-radius: 7px;
+      padding: 9px 13px;
+      font-size: 13px;
+      color: #cc3333;
+      text-align: center;
+      display: none;
+    }
+
+    .btn-login {
+      width: 100%;
+      background: #5a8040;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 13px;
+      font-family: 'Heebo', Arial, sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: background 0.2s, transform 0.1s;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-login:hover { background: #4a6f32; }
+    .btn-login:active { transform: scale(0.98); }
+    .btn-login:disabled { background: #a0b890; cursor: not-allowed; }
+
+    @media (max-width: 420px) {
+      .card { padding: 32px 22px 28px; }
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="logo-wrap">
+    <img src="assets/logo.jpeg" alt="גננות בעמק">
+  </div>
+  <div class="company-name">גננות בעמק</div>
+  <div class="subtitle">כניסה למערכת חשבוניות</div>
+
+  <form class="form" onsubmit="handleLogin(event)">
+    <div class="field">
+      <label for="username">שם משתמש</label>
+      <input type="text" id="username" autocomplete="username" placeholder="הכנס שם משתמש" required>
+    </div>
+    <div class="field">
+      <label for="password">סיסמה</label>
+      <input type="password" id="password" autocomplete="current-password" placeholder="הכנס סיסמה" required>
+    </div>
+    <div class="error-msg" id="errorMsg"></div>
+    <button type="submit" class="btn-login" id="btnLogin">כניסה</button>
+  </form>
+</div>
+
+<script>
+  async function handleLogin(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnLogin');
+    const errorMsg = document.getElementById('errorMsg');
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+
+    btn.disabled = true;
+    btn.textContent = 'מתחבר...';
+    errorMsg.style.display = 'none';
+
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        window.location.href = '/index.html';
+      } else {
+        errorMsg.textContent = data.message || 'שם משתמש או סיסמה שגויים';
+        errorMsg.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'כניסה';
+      }
+    } catch {
+      errorMsg.textContent = 'שגיאת חיבור. נסה שוב.';
+      errorMsg.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'כניסה';
+    }
+  }
+</script>
+</body>
+</html>

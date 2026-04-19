@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>חשבונית - גננות בעמק</title>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Heebo', Arial, sans-serif;
+      background: #f0f0f0;
+      padding: 20px;
+      color: #222;
+    }
+
+    .page {
+      background: white;
+      width: 794px;
+      min-height: 1123px;
+      margin: 0 auto;
+      padding: 30px 35px 20px 35px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 18px;
+    }
+
+    .header-meta {
+      font-size: 13px;
+      line-height: 1.8;
+      color: #333;
+      text-align: right;
+    }
+
+    .header-meta span {
+      font-weight: 600;
+    }
+
+    .header-brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .header-brand .logo {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 4px;
+    }
+
+    .header-brand .company-name {
+      font-size: 28px;
+      font-weight: 800;
+      color: #4a7030;
+      letter-spacing: 1px;
+    }
+
+    /* ── Main Table ── */
+    .table-wrapper {
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #c8ddb8;
+      margin-bottom: 0;
+    }
+
+    .invoice-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+
+    .invoice-table thead tr {
+      background: #5a8040;
+      color: white;
+    }
+
+    .invoice-table thead th {
+      padding: 10px 14px;
+      font-weight: 600;
+      font-size: 14px;
+      text-align: right;
+      border: 1px solid #4a7030;
+    }
+
+    .invoice-table thead th:nth-child(2),
+    .invoice-table thead th:nth-child(3),
+    .invoice-table thead th:nth-child(4) {
+      text-align: center;
+    }
+
+    .invoice-table tbody tr {
+      border-bottom: 1px solid #ddd;
+    }
+
+    .invoice-table tbody tr:nth-child(even) {
+      background: #f7faf4;
+    }
+
+    .invoice-table tbody td {
+      padding: 9px 14px;
+      text-align: right;
+      border: 1px solid #e0e0e0;
+      vertical-align: middle;
+    }
+
+    .invoice-table tbody td:nth-child(2),
+    .invoice-table tbody td:nth-child(3),
+    .invoice-table tbody td:nth-child(4) {
+      text-align: center;
+    }
+
+    .invoice-table tbody td:last-child {
+      font-weight: 600;
+      color: #333;
+    }
+
+    /* subtotal row */
+    .row-subtotal td {
+      background: #dce9d0 !important;
+      font-weight: 700;
+      font-size: 15px;
+      color: #2a5010;
+    }
+
+    /* grand total row */
+    .row-grandtotal td {
+      background: #b8d49a !important;
+      font-weight: 800;
+      font-size: 16px;
+      color: #1a3d08;
+    }
+
+    /* spacer row */
+    .row-spacer td {
+      height: 6px;
+      background: #f0f0f0 !important;
+      border: none;
+    }
+
+    /* work/labor row */
+    .row-labor td {
+      background: #f0f7ea !important;
+      font-style: italic;
+      color: #444;
+    }
+
+    /* ── Bottom Section ── */
+    .bottom-section {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      gap: 20px;
+      flex: 1;
+    }
+
+    .notes-box {
+      flex: 1.3;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 14px 16px;
+      font-size: 12.5px;
+    }
+
+    .notes-box h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #5a8040;
+      margin-bottom: 8px;
+      border-bottom: 2px solid #5a8040;
+      padding-bottom: 4px;
+    }
+
+    .notes-box p {
+      line-height: 1.7;
+      color: #444;
+    }
+
+    .notes-box .warning {
+      color: #cc0000;
+      font-weight: 600;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+
+    .terms-box {
+      flex: 1;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 14px 16px;
+      font-size: 12px;
+    }
+
+    .terms-box h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #5a8040;
+      margin-bottom: 8px;
+      border-bottom: 2px solid #5a8040;
+      padding-bottom: 4px;
+    }
+
+    .terms-box ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .terms-box ul li {
+      padding: 4px 0;
+      color: #444;
+      line-height: 1.5;
+      padding-right: 12px;
+      position: relative;
+    }
+
+    .terms-box ul li::before {
+      content: "•";
+      color: #5a8040;
+      font-weight: 700;
+      position: absolute;
+      right: 0;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      margin-top: 20px;
+      background: #5a8040;
+      color: white;
+      border-radius: 6px;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .footer .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .footer .contact-item span {
+      font-weight: 700;
+      font-size: 12px;
+      opacity: 0.85;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-brand">
+      <img src="assets/logo.jpeg" alt="גננות בעמק" class="logo">
+      <div class="company-name">גננות בעמק</div>
+    </div>
+    <div class="header-meta">
+      <div>תאריך: <span>12/04/2026</span></div>
+      <div>שם לקוח: <span>ניב</span></div>
+    </div>
+  </div>
+
+  <!-- Invoice Table -->
+  <div class="table-wrapper">
+  <table class="invoice-table">
+    <thead>
+      <tr>
+        <th>חומרים</th>
+        <th style="width:14%">כמות</th>
+        <th style="width:18%">מחיר</th>
+        <th style="width:18%">סה"כ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>חצץ לבן מטר² (כולל פיזור)</td>
+        <td>60</td>
+        <td>₪45</td>
+        <td>₪2,700</td>
+      </tr>
+      <tr>
+        <td>חלזון גדול קנוי מקטלוג</td>
+        <td>1</td>
+        <td>₪600</td>
+        <td>₪600</td>
+      </tr>
+      <tr>
+        <td>שומשום</td>
+        <td>2 שקיות</td>
+        <td>₪150</td>
+        <td>₪300</td>
+      </tr>
+      <tr>
+        <td>צ'וקלט קרקעית</td>
+        <td>100</td>
+        <td>₪2.50</td>
+        <td>₪250</td>
+      </tr>
+      <tr>
+        <td>אגרוניט</td>
+        <td>1</td>
+        <td>₪600</td>
+        <td>₪600</td>
+      </tr>
+      <tr>
+        <td>כלוב כולל הרכבה</td>
+        <td>1</td>
+        <td>₪300</td>
+        <td>₪300</td>
+      </tr>
+
+      <!-- Subtotal: Materials -->
+      <tr class="row-subtotal">
+        <td colspan="3">סה"כ חומרים</td>
+        <td>₪4,750</td>
+      </tr>
+
+      <tr class="row-spacer"><td colspan="4"></td></tr>
+
+      <!-- Labor row -->
+      <tr class="row-labor">
+        <td>עלות עבודה כללית</td>
+        <td>1</td>
+        <td>₪790</td>
+        <td>₪790</td>
+      </tr>
+
+      <!-- Grand Total -->
+      <tr class="row-grandtotal">
+        <td colspan="3">סה"כ חומרים ועבודה</td>
+        <td>₪12,520</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <!-- Bottom: Notes + Terms -->
+  <div class="bottom-section">
+    <div class="notes-box">
+      <h4>הערה</h4>
+      <p>
+        הצעת מחיר לחצץ ברוחב 1 מטר עם סס חלוקי גלם ברוחב 0.5 מטר.
+      </p>
+      <p class="warning">עלות שינויים בלולה!</p>
+    </div>
+    <div class="terms-box">
+      <h4>תנאים</h4>
+      <ul>
+        <li>תוקף הצעת המחיר 14 ימים מתאריך הנפקתה</li>
+        <li>תשלום מקדמה בסך 50% בחתימה על חוזה</li>
+        <li>התשלום הסופי יוסדר ביום עבודה אחרון</li>
+        <li>במידה ויידרשו עבודות נוספות, תינתן הצעת מחיר מעודכנת</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="contact-item"><span>מייל –</span> Morlev19373@gmail.com</div>
+    <div class="contact-item"><span>מאי –</span> 0527085585</div>
+    <div class="contact-item"><span>מור –</span> 0544381584</div>
+  </div>
+
+</div>
+</body>
+</html>
