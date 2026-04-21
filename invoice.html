@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>חשבונית - גננות בעמק</title>
+  <title>הצעת מחיר - גננות בעמק</title>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -407,7 +407,7 @@
       // Use Web Share API on iOS to trigger native share sheet
       // First trigger print so the page is "ready", then share current URL
       navigator.share({
-        title: 'חשבונית - גננות בעמק',
+        title: 'הצעת מחיר - גננות בעמק',
         url: window.location.href
       }).catch(() => window.print());
     } else {
@@ -459,20 +459,27 @@
   spacer.innerHTML = '<td colspan="4"></td>';
   tbody.appendChild(spacer);
 
-  // Labor
-  const laborPrice = parseFloat(data.laborPrice) || 0;
-  const laborTr = document.createElement('tr');
-  laborTr.className = 'row-labor';
-  laborTr.innerHTML = `
-    <td>${data.laborDesc || 'עלות עבודה כללית'}</td>
-    <td>1</td>
-    <td>₪${fmt(laborPrice)}</td>
-    <td>₪${fmt(laborPrice)}</td>
-  `;
-  tbody.appendChild(laborTr);
+  // Labor rows (support both new multi-row format and legacy single-row)
+  const laborRows = data.laborRows ||
+    [{ desc: data.laborDesc || 'עלות עבודה כללית', price: data.laborPrice || 0 }];
+  let laborTotal = 0;
+
+  laborRows.forEach(labor => {
+    const lp = parseFloat(labor.price) || 0;
+    laborTotal += lp;
+    const laborTr = document.createElement('tr');
+    laborTr.className = 'row-labor';
+    laborTr.innerHTML = `
+      <td>${labor.desc || 'עלות עבודה'}</td>
+      <td>1</td>
+      <td>₪${fmt(lp)}</td>
+      <td>₪${fmt(lp)}</td>
+    `;
+    tbody.appendChild(laborTr);
+  });
 
   // Grand total
-  const grandTotal = materialsTotal + laborPrice;
+  const grandTotal = materialsTotal + laborTotal;
   const grandTr = document.createElement('tr');
   grandTr.className = 'row-grandtotal';
   grandTr.innerHTML = `<td colspan="3">סה"כ חומרים ועבודה</td><td>₪${fmt(grandTotal)}</td>`;

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>יצירת חשבונית - גננות בעמק</title>
+  <title>יצירת הצעת מחיר - גננות בעמק</title>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -311,7 +311,7 @@
     <img src="assets/logo.jpeg" alt="לוגו">
     <div>
       <div class="title">גננות בעמק</div>
-      <div class="subtitle">יצירת חשבונית חדשה</div>
+      <div class="subtitle">יצירת הצעת מחיר חדשה</div>
     </div>
   </div>
 
@@ -353,16 +353,23 @@
     <!-- Labor cost -->
     <div>
       <div class="section-label">עלות עבודה</div>
-      <div class="labor-row">
-        <div>
-          <label for="laborDesc">תיאור</label>
-          <input type="text" id="laborDesc" value="עלות עבודה כללית">
-        </div>
-        <div>
-          <label for="laborPrice">מחיר ₪</label>
-          <input type="number" id="laborPrice" placeholder="0" min="0">
-        </div>
+      <div class="table-scroll">
+      <table class="materials-table" id="laborTable">
+        <thead>
+          <tr>
+            <th class="col-material">תיאור</th>
+            <th class="center col-price">מחיר ₪</th>
+            <th class="col-remove"></th>
+          </tr>
+        </thead>
+        <tbody id="laborBody">
+          <!-- rows inserted by JS -->
+        </tbody>
+      </table>
       </div>
+      <button class="btn-add" onclick="addLaborRow()">
+        <span class="plus">＋</span> הוסף שורה
+      </button>
     </div>
 
     <!-- Notes -->
@@ -388,7 +395,7 @@
     </div>
 
     <!-- Generate -->
-    <button class="btn-generate" onclick="generateInvoice()">צור חשבונית</button>
+    <button class="btn-generate" onclick="generateInvoice()">צור הצעת מחיר</button>
 
   </div>
 </div>
@@ -416,6 +423,27 @@
 
   // seed 3 empty rows on load
   addMaterialRow(); addMaterialRow(); addMaterialRow();
+
+  // ── Labor ──
+  function addLaborRow(desc='', price='') {
+    const tbody = document.getElementById('laborBody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="col-material"><input type="text" placeholder="תיאור עבודה" value="${desc}"></td>
+      <td class="center col-price"><input type="number" placeholder="0.00" min="0" step="0.01" value="${price}"></td>
+      <td class="col-remove"><button class="btn-remove" onclick="removeLaborRow(this)" title="הסר שורה">✕</button></td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  function removeLaborRow(btn) {
+    const tbody = document.getElementById('laborBody');
+    if (tbody.rows.length <= 1) return;
+    btn.closest('tr').remove();
+  }
+
+  // seed default labor row
+  addLaborRow('עלות עבודה כללית');
 
   // ── Notes ──
   function addNote(value='') {
@@ -467,8 +495,13 @@
       };
     }).filter(r => r.material);
 
-    const laborDesc  = document.getElementById('laborDesc').value.trim();
-    const laborPrice = parseFloat(document.getElementById('laborPrice').value) || 0;
+    const laborRows = [...document.querySelectorAll('#laborBody tr')].map(tr => {
+      const inputs = tr.querySelectorAll('input');
+      return {
+        desc:  inputs[0].value.trim(),
+        price: parseFloat(inputs[1].value) || 0,
+      };
+    }).filter(r => r.desc || r.price);
 
     const notes = [...document.querySelectorAll('#notesList input')]
       .map(i => i.value.trim()).filter(Boolean);
@@ -476,7 +509,7 @@
     const terms = [...document.querySelectorAll('#termsList input')]
       .map(i => i.value.trim()).filter(Boolean);
 
-    const data = { clientName, rows, laborDesc, laborPrice, notes, terms };
+    const data = { clientName, rows, laborRows, notes, terms };
     sessionStorage.setItem('invoiceData', JSON.stringify(data));
     window.open('invoice.html', '_blank');
   }
